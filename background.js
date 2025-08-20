@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   });
 
   chrome.commands.onCommand.addListener((command) => {
-    console.log("command recieved", command);
+    console.log("command recieved", command)
     if (command === "capture_visible_area_Q"|| command === "capture_visible_area_X") {
       captureVisibleAndDownload();
     }

@@ -3,6 +3,7 @@ const downloadBtn = document.getElementById('downloadBtn');
 const previewImg = document.getElementById('preview');
 const msgDiv = document.getElementById('msg');
 const canvas = document.getElementById('canvas');
+const deleteBtn = document.getElementById('deleteBtn');
 
 function showMessage(m) {
   msgDiv.textContent = m || '';
@@ -32,6 +33,8 @@ function handleCaptureResult(dataUrl, rect) {
     previewImg.src = canvas.toDataURL("image/png");
     previewImg.style.display = "block";
     downloadBtn.disabled = false;
+    deleteBtn.disabled = false;
+    deleteBtn.style.display = "inline-block";
     showMessage('');
   };
   img.src = dataUrl;
@@ -74,4 +77,27 @@ downloadBtn.addEventListener('click', () => {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   }, 'image/png');
+});
+document.addEventListener("DOMContentLoaded", () => {
+  chrome.storage.local.get("lastCapture", (result) => {
+    if (result.lastCapture && result.lastCapture.dataUrl) {
+      previewImg.src = result.lastCapture.dataUrl;
+      previewImg.style.display = "block";
+      deleteBtn.disabled = false;
+      deleteBtn.style.display = "inline-block";
+    }
+  });
+
+  deleteBtn.addEventListener("click", () => {
+    chrome.storage.local.remove("lastCapture", () => {
+      previewImg.src = "";
+      previewImg.style.display = "none";
+      deleteBtn.disabled = true;
+      deleteBtn.style.display = "none";
+      canvas.width = 0;
+      canvas.height = 0;
+      downloadBtn.disabled = true;
+      showMessage("Screenshot deleted.");
+    });
+  });
 });
