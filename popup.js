@@ -4,6 +4,7 @@ const previewImg = document.getElementById('preview');
 const msgDiv = document.getElementById('msg');
 const canvas = document.getElementById('canvas');
 const deleteBtn = document.getElementById('deleteBtn');
+const fullPage = document.getElementById('fullPage');
 
 function showMessage(m) {
   msgDiv.textContent = m || '';
@@ -35,6 +36,7 @@ function handleCaptureResult(dataUrl, rect) {
     downloadBtn.disabled = false;
     deleteBtn.disabled = false;
     deleteBtn.style.display = "inline-block";
+    downloadBtn.style.display = "inline-block";
     showMessage('');
   };
   img.src = dataUrl;
@@ -97,7 +99,27 @@ document.addEventListener("DOMContentLoaded", () => {
       canvas.width = 0;
       canvas.height = 0;
       downloadBtn.disabled = true;
+      downloadBtn.style.display = "none"
       showMessage("Screenshot deleted.");
+    });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  fullPage.addEventListener("click", () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tabId = tabs[0].id;
+      chrome.runtime.sendMessage({ action: "captureFullPage", tabId});
+      chrome.runtime.onMessage.addListener(function listener(msg) {
+        if (msg.type === "FullPage_Captured") {
+          const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+          chrome.downloads.download({
+            url: msg.image,
+            filename: `full-page-screenshot-${timestamp}.png`,
+          });
+          chrome.runtime.onMessage.removeListener(listener);
+        }
+      });
     });
   });
 });

@@ -32,14 +32,47 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     }
   });
 
-  function captureVisibleAndDownload() {
-    chrome.tabs.captureVisibleTab({ format: "png" }, (dataUrl) => {
-      if (chrome.runtime.lastError || !dataUrl) return;
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      chrome.downloads.download({
-        url: dataUrl,
-        filename: `visible-screenshot-${timestamp}.png`,
-      });
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg.action === "captureFullPage") {
+      captureFullPage(msg.tabId);
+    }
+  });
+  
+  async function captureFullPage(tabId) {
+    const [{ result: page }] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => ({
+        width: document.documentElement.scrollWidth,
+        height: document.documentElement.scrollHeight,
+        viewportHeight: window.innerHeight
+      }),
     });
+  
+    let y = 0;
+    const images = [];
+    while (y < page.height) {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        func: (scrollY) => window.scrollTo(0, scrollY),
+        args: [y],
+      });
+  
+      await new Promise(r => setTimeout(r, 700));
+  
+      const dataUrl = await new Promise(resolve => {
+        chrome.tabs.captureVisibleTab({ format: "png" }, resolve);
+      });
+  
+      images.push({ dataUrl, y });
+      y += page.viewportHeight;
+    }
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      files: ['content.js']
+    });
+    chrome.tabs.sendMessage(tabId, { action: "stitch", images, width: page.width, height: page.height });
+    chrome.tabs.sendMessage(tabId, { action: "cleanup" });
   }
+  
+  
   

@@ -9,13 +9,14 @@
   <div class="container">
     <h3>Custom Area Screenshot</h3>
   <div class="controls">
+    <button id="fullPage">Full Page</button>
     <button id="captureBtn">Capture area</button>
-    <button id="downloadBtn" disabled>Download</button>
+    <button id="downloadBtn" style="display: none;">Download</button>
   </div>
   <div class="note">Click <strong>Capture area</strong>, drag to select. Press Esc to cancel.</div>
   <canvas id="canvas"></canvas>
   <img id="preview" alt="Cropped preview will appear here" src="" hidden />
-  <div id="msg" style="color:rgb(0, 0, 0); font-size:12px; margin-top:6px;"></div>
+  <div id="msg" style="color:rgb(255, 255, 255); font-size:12px; margin-top:6px;"></div>
   <button id="deleteBtn" style="display: none;">Delete</button>  
   </div>
   <script src="popup.js"></script>

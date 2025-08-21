@@ -1,8 +1,8 @@
 body {
     margin: 0;
     font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: #e6409b;
-    background: linear-gradient(135deg, rgb(133, 9, 77) 0%, rgb(67, 89, 114) 100%);
+    background: #473c3c;
+    background: linear-gradient(0deg, rgba(71, 60, 60, 1) 0%, rgba(8, 0, 0, 1) 100%);
     padding: 16px;
     text-align: center;
     width: 360px;
@@ -14,8 +14,8 @@ body {
 
   .container {
     border-radius: 20px;
-    background: #e6409b;
-    background: linear-gradient(135deg, rgba(230, 64, 155, 1) 0%, rgba(148, 187, 233, 1) 100%);
+    background: #473c3c;
+    background: linear-gradient(0deg, rgba(71, 60, 60, 1) 0%, rgba(48, 31, 31, 1) 100%);
     padding: 10px;
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.3);
@@ -87,12 +87,12 @@ body {
   
   .note {
     font-size: 12px;
-    color: #000000;
+    color: #ffffff;
     margin-bottom: 16px;
   }
   
   canvas {
-    display: none; /* hidden until used */
+    display: none;
   }
   
   #preview {
@@ -104,7 +104,7 @@ body {
   }
   
   #msg {
-    color: #ff5c5c; /* error red */
+    color: #ff5c5c;
     font-size: 12px;
     margin-top: 8px;
   }

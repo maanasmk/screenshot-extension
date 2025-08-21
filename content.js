@@ -103,3 +103,41 @@
   }
   window.addEventListener('keydown', onKey);
 })();
+
+function handleStitchMessage(msg) {
+  if (msg.action === "stitch") {
+    const { images, width, height } = msg;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+
+    Promise.all(
+      images.map(({ dataUrl, y }) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.src = dataUrl;
+          img.onload = () => resolve({ img, y });
+        })
+      )
+    ).then((loadedImages) => {
+      loadedImages.forEach(({ img, y }) => {
+        ctx.drawImage(img, 0, y);
+      });
+
+      const finalImage = canvas.toDataURL("image/png");
+      chrome.runtime.sendMessage({
+        type: "FullPage_Captured",
+        image: finalImage,
+      });
+    });
+  }
+  if (msg.action === "cleanup") {
+    chrome.runtime.onMessage.removeListener(handleStitchMessage);
+  }
+}
+chrome.runtime.onMessage.addListener(handleStitchMessage);
+
+
+
